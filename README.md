@@ -1,6 +1,7 @@
 # PHP7 Tools for caching
 
-Just a set of useful functions in order to manage cache system in PHP7
+Just a set of useful functions in order to manage cache system in PHP7.
+The memcached_load function requires the `php-memcached` package.
 
 ## FileSystem Cache
 
