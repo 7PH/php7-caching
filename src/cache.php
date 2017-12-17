@@ -1,12 +1,12 @@
 <?php
 /** Cache system using the filesystem and semaphores */
 
-/** Charge un fichier cache, et le cas échéant le génère
-    * @param name Nom du fichier cache
-    * @param generator De type '() => string' génère le cache (s'il a expiré ou s'il n'existe pas)
-    * @param expire Nombre de secondes après lesquels le cache est considéré comme expiré
-    * @param has_regen flag indiquant si le cache a été regénéré (ou s'il aurait du l'être mais que cela était impossible en l'absence de fonction génératrice)
-    * @return cache Le fichier de cache généré, trouvé, ou une chaine vide s'il n'a pas été trouvé
+/** Load a cache file. Regenerate it if it's expired or does not exists
+    * @param name File cache name
+    * @param generator Function '() => string' generate cache
+    * @param expire Cache expiration, in seconds
+    * @param has_regen Wether the cache file has been generated (or should have if no generator function was provided)
+    * @return cache Cache content or empty string if generator=NULL & cache expired & file does not exists
     */
 function cache_load(string $name,
                     callable $generator = NULL,
