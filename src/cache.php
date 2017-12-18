@@ -18,10 +18,10 @@ function cache_load(string $name,
     if (! is_dir($dirname) && ! mkdir($dirname, 0777, true)) return get_current_user();
 
     $has_regen = ! file_exists($file) || ($expire > -1 && filemtime($file) + $expire < time());
-    // le fichier doit être regénéré
+    // cache has expired or does not exist
     if ($has_regen) {
         if ($generator != NULL) {
-            // une fonction de génération a été donnée
+            // generator function is provided
             $cache = $generator();
             $fp = fopen($file, "a+");
             $locked = flock($fp, LOCK_EX);
@@ -30,25 +30,24 @@ function cache_load(string $name,
                 fwrite($fp, $cache);
                 flock($fp, LOCK_UN);
                 fclose($fp);
-                return $cache; // on renvoie le cache qu'on vient de regénérer
+                return $cache; // we return the generated cache
             }
             fclose($fp);
         }
 
         if (! file_exists($file)) {
-            // le cache n'a pas pu être généré ou pas de fonction génératrice
-            // (ET) le fichier n'existe pas
+            // No generator was provided & the file does not exist
             return false;
         }
     }
 
-    // soit le fichier ne doit pas être regénéré
-    // soit il le devait mais le lock n'a pas pu être effectué
-    // ceci dit, le fichier existe (mais est out-dated)
+    // wether the cache is still valid,
+    // or he should be regenerated but no generator was provided
+    // in this case we return the expired cache
     $fp = fopen($file, "r");
     $wait = true;
     $locked = flock($fp, LOCK_SH, $wait);
-    if (! $locked) return false; // verrou n'a pas pu être posé, on abandonne
+    if (! $locked) return false; // lock failed for some reason?
     $cache = file_get_contents($file);
     flock($fp, LOCK_UN);
     fclose($fp);
@@ -57,6 +56,9 @@ function cache_load(string $name,
     return $cache;
 }
 
+/** Destroy a cache file
+    * @param name Name of the cache file to destroy
+    */
 function cache_destroy(string $name) {
     $file = __DIR__ . "/../cache/$name";
     unlink($file);
