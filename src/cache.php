@@ -6,7 +6,7 @@
     * @param generator Function '() => string' generate cache
     * @param expire Cache expiration, in seconds
     * @param has_regen Wether the cache file has been generated (or should have if no generator function was provided)
-    * @return cache Cache content or empty string if generator=NULL & cache expired & file does not exists
+    * @return cache Cache content or 'false' if generator=NULL & cache expired & file does not exists
     */
 function cache_load(string $name,
                     callable $generator = NULL,
@@ -15,7 +15,7 @@ function cache_load(string $name,
     $expire = $expire ?? -1;
     $file = __DIR__ . "/../cache/$name";
     $dirname = dirname($file);
-    if (! is_dir($dirname) && ! mkdir($dirname, 0777, true)) return get_current_user();
+    if (! is_dir($dirname) && ! mkdir($dirname, 0777, true)) return false;
 
     $has_regen = ! file_exists($file) || ($expire > -1 && filemtime($file) + $expire < time());
     // cache has expired or does not exist
