@@ -2,6 +2,7 @@
 
 Just a set of useful functions in order to manage cache system in PHP7.
 The memcached_load function requires the `php-memcached` package.
+The `cache` directory contains the filesystem cache data.
 
 ## FileSystem Cache
 
