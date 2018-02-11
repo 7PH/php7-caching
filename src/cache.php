@@ -11,7 +11,7 @@
 function cache_load(string $name,
                     callable $generator = NULL,
                     int $expire = NULL,
-                    bool &$has_regen = NULL) {
+                    bool &$has_regen = NULL): ?string {
     $expire = $expire ?? -1;
     $file = __DIR__ . "/../cache/$name";
     $dirname = dirname($file);
@@ -23,6 +23,7 @@ function cache_load(string $name,
         if ($generator != NULL) {
             // generator function is provided
             $cache = $generator();
+            if (gettype($cache) !== 'string') $cache = serialize($cache);
             $fp = fopen($file, "a+");
             $locked = flock($fp, LOCK_EX);
             if ($locked) {
